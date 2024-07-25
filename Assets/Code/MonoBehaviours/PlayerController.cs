@@ -10,6 +10,7 @@ namespace Code.MonoBehaviours {
         [SerializeField] private float _jumpForce = 7f;
         [SerializeField] private float _maxDownwardVelocity = -10f;
         [SerializeField] private float _fastFallAfterJumpDelay = 0.18f;
+        [SerializeField] private int _maxJumpsAllowed = 3;
         
         private Rigidbody2D _rb;
         private InputAction _horizontalMoveAction;
@@ -21,6 +22,8 @@ namespace Code.MonoBehaviours {
         private float _timeOfLastJump;
         private bool _isHoldingFastFallSinceBeforeLastJump;
 
+        private int _jumpsRemaining;
+
        private void Start() {
            _rb = GetComponent<Rigidbody2D>();
            _horizontalMoveAction = InputSystem.actions.FindAction("HorizontalMove");
@@ -30,14 +33,22 @@ namespace Code.MonoBehaviours {
        }
 
        private void Update() {
-           if (_jumpAction.triggered && _isGrounded) {
+           if (_jumpAction.triggered && _jumpsRemaining > 0) {
+               _rb.velocity = new Vector2(_rb.velocity.x, 0);
                _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
                _timeOfLastJump = Time.time;
                _isHoldingFastFallSinceBeforeLastJump = _fastFallAction.ReadValue<float>() > 0f;
+               _jumpsRemaining--;
            }
 
            if (_isHoldingFastFallSinceBeforeLastJump && timeSinceLastJump() > _fastFallAfterJumpDelay && (_isGrounded || _fastFallAction.ReadValue<float>() == 0f)) {
                _isHoldingFastFallSinceBeforeLastJump = false;
+           }
+
+           if (timeSinceLastJump() > _fastFallAfterJumpDelay) {
+               if (_isGrounded) {
+                   _jumpsRemaining = _maxJumpsAllowed;
+               }
            }
        }
 

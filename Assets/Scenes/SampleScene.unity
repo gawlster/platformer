@@ -283,8 +283,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d012bda606aa4f5987b8b1dd61936123, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 5
+  _moveSpeed: 4
   _jumpForce: 7
+  _maxDownwardVelocity: -10
+  _fastFallAfterJumpDelay: 0.18
+  _maxJumpsAllowed: 5
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
